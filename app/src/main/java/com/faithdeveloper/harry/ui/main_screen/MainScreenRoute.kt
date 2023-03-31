@@ -1,16 +1,20 @@
 package com.faithdeveloper.harry.ui.main_screen
 
 import androidx.compose.runtime.Composable
-import com.faithdeveloper.harry.model.Characters
-import com.faithdeveloper.harry.ui.theme.MainScreen
+import com.faithdeveloper.harry.model.HarryCharacter
 import com.faithdeveloper.harry.viewmodel.MainScreenViewModel
 
 @Composable
 fun MainScreenRoute(
     mainScreenViewModel: MainScreenViewModel,
-    onClickCharacter:(character:Characters) -> Unit
+    onClickCharacter:(character:HarryCharacter) -> Unit
 ){
-    MainScreen(characters = mainScreenViewModel.getAllCharacters(), onClickCharacter = onClickCharacter, newSearch = {query ->
+    mainScreenViewModel.getAllCharacters()
+    MainScreen( onClickCharacter = onClickCharacter, newSearch = {query ->
         mainScreenViewModel.newSearch(query)
+    }, mainScreenViewModel, onSearchTypeChange = {
+        mainScreenViewModel.setSearchType(it)
+    }, retry = {
+        mainScreenViewModel.retry()
     })
 }

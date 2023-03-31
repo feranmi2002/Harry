@@ -6,38 +6,41 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.rememberNavController
+import com.faithdeveloper.harry.data.ApiHelper
+import com.faithdeveloper.harry.data.ApiHelperImpl
+import com.faithdeveloper.harry.navigation.AppNavGraph
+import com.faithdeveloper.harry.retrofit.ServiceBuilder
 import com.faithdeveloper.harry.ui.theme.HarryTheme
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            HarryTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    Greeting("Android")
-                }
-            }
+            App()
         }
     }
 }
 
 @Composable
-fun Greeting(name: String) {
-    Text(text = "Hello $name!")
+fun App() {
+    HarryTheme {
+        // A surface container using the 'background' color from the theme
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.background
+        ) {
+            val navController = rememberNavController()
+            AppNavGraph(
+                apiHelper = ApiHelperImpl(ServiceBuilder.apiService),
+                navController = navController
+            )
+        }
+    }
+
 }
 
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    HarryTheme {
-        Greeting("Android")
-    }
-}
+

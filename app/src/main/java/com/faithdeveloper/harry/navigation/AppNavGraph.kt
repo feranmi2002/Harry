@@ -5,16 +5,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
 import com.faithdeveloper.harry.data.ApiHelper
-import com.faithdeveloper.harry.model.Characters
-import com.faithdeveloper.harry.ui.details_screen.DetailsScreenRoute
+import com.faithdeveloper.harry.ui.details_screen.DetailsRoute
 import com.faithdeveloper.harry.ui.main_screen.MainScreenRoute
 import com.faithdeveloper.harry.viewmodel.MainScreenViewModel
-import com.google.gson.Gson
 
 @Composable
 fun AppNavGraph(
@@ -28,31 +24,24 @@ fun AppNavGraph(
         modifier = Modifier.fillMaxSize()
     ) {
 
+        var mainScreenViewModel: MainScreenViewModel? = null
         composable(AppDestinations.MainScreen.route) {
-            val mainScreenViewModel: MainScreenViewModel = viewModel(
+            mainScreenViewModel = viewModel(
                 factory = MainScreenViewModel.provideFactory(apiHelper = apiHelper)
             )
 
             MainScreenRoute(
-                mainScreenViewModel = mainScreenViewModel,
+                mainScreenViewModel = mainScreenViewModel!!,
                 onClickCharacter = { character ->
-                    AppNavigationActions.navigateToDetailsScreen(navController, character)
+                    mainScreenViewModel?.setSelectedCharacter(character)
+                    AppNavigationActions.navigateToDetailsScreen(navController)
                 }
             )
         }
 
-        composable(
-            AppDestinations.DetailsScreen.route + "/{$DETAIL_SCREEN_ARG_ID}",
-            arguments = listOf(navArgument(DETAIL_SCREEN_ARG_ID) {
-                type = NavType.StringType
-            })
-        ) { navBackStackEntry ->
-            DetailsScreenRoute(
-                character = Gson().fromJson(
-                    navBackStackEntry.arguments?.getString(
-                        DETAIL_SCREEN_ARG_ID
-                    )!!, Characters::class.java
-                )
+        composable(AppDestinations.DetailsScreen.route) { navBackStackEntry ->
+            DetailsRoute(
+                character = mainScreenViewModel?.selectedCharacter()!!
             ) {
                 AppNavigationActions.popBackStack(navController)
             }

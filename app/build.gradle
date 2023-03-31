@@ -37,7 +37,7 @@ android {
         compose true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion '1.4.3'
+        kotlinCompilerExtensionVersion '1.4.4'
     }
     packagingOptions {
         resources {
@@ -67,6 +67,10 @@ dependencies {
     implementation'androidx.paging:paging-compose:1.0.0-alpha18'
 
     implementation 'com.google.code.gson:gson:2.10.1'
+
+    implementation 'com.squareup.okhttp3:logging-interceptor:4.10.0'
+
+    implementation "io.coil-kt:coil-compose:2.3.0"
 
     implementation 'com.github.bumptech.glide:glide:4.15.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.15.0'

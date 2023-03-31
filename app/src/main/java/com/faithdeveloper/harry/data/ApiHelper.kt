@@ -1,14 +1,14 @@
 package com.faithdeveloper.harry.data
 
-import com.faithdeveloper.harry.model.Characters
+import com.faithdeveloper.harry.data.Result
+import com.faithdeveloper.harry.model.HarryCharacter
 import com.faithdeveloper.harry.retrofit.ApiService
+import kotlinx.coroutines.flow.Flow
 
-class ApiHelper(private val apiService: ApiService) {
-    suspend fun getAllCharacters():List<Characters>{
-        return apiService.getAllCharacters()
-    }
+interface ApiHelper {
+    suspend fun getAllCharacters(): Flow<Result<List<HarryCharacter>>>
 
-    suspend fun getCharactersByHouse(house:String):List<Characters>{
-        return apiService.getCharactersByHouse(house)
-    }
+    suspend fun getCharactersByHouse(house:String): Flow<Result<List<HarryCharacter>>>
+
+    suspend fun getCharactersByName(name:String): Flow<Result<List<HarryCharacter>>>
 }
