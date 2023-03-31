@@ -6,7 +6,6 @@ import com.faithdeveloper.harry.util.Utils
 
 @Composable
 fun DetailsRoute(character:HarryCharacter, onClickBack:() -> Unit){
-
     DetailsScreen(character = mapCharacterToTitle(character) ) {
         onClickBack.invoke()
     }
@@ -16,7 +15,6 @@ fun mapCharacterToTitle(character:HarryCharacter) = mapOf(
     NAME to character.name,
     ACTOR to character.actor,
     ALIVE to character.alive.toString(),
-    ID to character.id,
     IMAGE to character.image,
     ANCESTRY to character.ancestry,
     SPECIES to character.species,

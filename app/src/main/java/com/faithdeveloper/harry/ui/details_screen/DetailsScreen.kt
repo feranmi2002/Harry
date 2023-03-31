@@ -19,7 +19,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.faithdeveloper.harry.R
 
 
@@ -80,7 +79,7 @@ fun DetailsScreen(character: Map<String, String>, onClickBack: () -> Unit) {
 
 
 @Composable
-fun DetailsRow(title: String, item: String) {
+fun DetailsRow(title: String?, item: String?) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -90,12 +89,12 @@ fun DetailsRow(title: String, item: String) {
     ) {
         Text(
             modifier = Modifier.fillMaxWidth(),
-            text = title,
+            text = title ?: "",
             style = MaterialTheme.typography.bodyLarge
         )
         Text(
             modifier = Modifier.fillMaxWidth(),
-            text = item,
+            text = item?:"",
             style = MaterialTheme.typography.titleSmall
         )
     }

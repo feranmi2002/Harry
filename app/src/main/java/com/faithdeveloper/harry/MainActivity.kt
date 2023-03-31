@@ -8,12 +8,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
-import com.faithdeveloper.harry.data.ApiHelper
 import com.faithdeveloper.harry.data.ApiHelperImpl
 import com.faithdeveloper.harry.navigation.AppNavGraph
 import com.faithdeveloper.harry.retrofit.ServiceBuilder
 import com.faithdeveloper.harry.ui.theme.HarryTheme
+import com.faithdeveloper.harry.viewmodel.MainScreenViewModel
 
 
 class MainActivity : ComponentActivity() {
@@ -33,10 +34,15 @@ fun App() {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
+            val apiHelper = ApiHelperImpl(ServiceBuilder.apiService)
             val navController = rememberNavController()
+            val mainScreenViewModel:MainScreenViewModel = viewModel(
+                factory = MainScreenViewModel.provideFactory(apiHelper = apiHelper)
+            )
             AppNavGraph(
-                apiHelper = ApiHelperImpl(ServiceBuilder.apiService),
-                navController = navController
+                apiHelper = apiHelper,
+                navController = navController,
+                mainScreenViewModel = mainScreenViewModel
             )
         }
     }

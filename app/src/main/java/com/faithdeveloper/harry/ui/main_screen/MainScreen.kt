@@ -13,6 +13,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -25,14 +26,15 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.faithdeveloper.harry.R
-import com.faithdeveloper.harry.data.Result
+import com.faithdeveloper.harry.data.ApiResult
+import com.faithdeveloper.harry.data.Status
 import com.faithdeveloper.harry.model.HarryCharacter
-import com.faithdeveloper.harry.model.Wand
+import com.faithdeveloper.harry.ui.details_screen.HOUSE
+import com.faithdeveloper.harry.ui.details_screen.NAME
 import com.faithdeveloper.harry.viewmodel.MainScreenViewModel
 
 @Composable
@@ -47,10 +49,15 @@ fun MainScreen(
     var inputValue by remember { mutableStateOf(TextFieldValue()) }
 
     var searchType by remember {
-        mutableStateOf("Name")
+        mutableStateOf(NAME)
     }
 
-    val characters = mainScreenViewModel.result.collectAsStateWithLifecycle(initialValue = Result.Loading)
+    val apiResult: ApiResult by mainScreenViewModel.result.observeAsState(
+        initial = ApiResult(
+            Status.LOADING,
+            emptyList()
+        )
+    )
 
     Column(
         modifier = Modifier
@@ -58,11 +65,30 @@ fun MainScreen(
             .padding(16.dp),
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
-            Text(
-                modifier = Modifier.padding(bottom = 8.dp),
-                text = stringResource(id = R.string.app_name),
-                style = MaterialTheme.typography.titleLarge
-            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = stringResource(id = R.string.app_name),
+                    style = MaterialTheme.typography.titleLarge
+                )
+
+                Text(
+                    modifier = Modifier.clickable {
+                        mainScreenViewModel.getAllCharacters()
+                    },
+                    text = stringResource(id = R.string.all_characters),
+                    style = MaterialTheme.typography.titleSmall,
+                    textDecoration = TextDecoration.Underline,
+                    color = MaterialTheme.colorScheme.secondary
+                )
+
+
+            }
+
 
             OutlinedTextField(
                 modifier = Modifier
@@ -85,7 +111,7 @@ fun MainScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .wrapContentHeight(),
-                        text = "Search",
+                        text = stringResource(id = R.string.search),
                         textAlign = TextAlign.Center
                     )
                 },
@@ -94,7 +120,9 @@ fun MainScreen(
                     imeAction = ImeAction.Search
                 ),
                 keyboardActions = KeyboardActions {
-                    newSearch.invoke(inputValue.text)
+                    if (inputValue.text.isNotBlank()) {
+                        newSearch.invoke(inputValue.text)
+                    }
                 }
 
             )
@@ -109,67 +137,85 @@ fun MainScreen(
             ) {
                 Text(
                     modifier = Modifier.padding(end = 4.dp),
-                    text = "Search By:",
+                    text = stringResource(id = R.string.search_by),
                     style = MaterialTheme.typography.bodyMedium
                 )
-                Chip(name = "Name", searchType = searchType, onToggleChange = {
-                    searchType = if (it) "Name"
-                    else "House"
+                Chip(name = NAME, searchType = searchType, onToggleChange = {
+                    searchType = if (it) NAME
+                    else HOUSE
                     onSearchTypeChange.invoke(searchType)
 
                 })
-                Chip(name = "House", searchType = searchType, onToggleChange = {
-                    searchType = if (it) "House"
-                    else "Name"
+                Chip(name = HOUSE, searchType = searchType, onToggleChange = {
+                    searchType = if (it) HOUSE
+                    else NAME
                     onSearchTypeChange.invoke(searchType)
                 })
             }
 
-            if (characters.value is Result.Loading) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    CircularProgressIndicator()
-                }
-
-            }
-
-            if (characters.value is Result.Error) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .wrapContentHeight(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Button(
-                        onClick = { retry.invoke() },
-                        modifier = Modifier.wrapContentSize(align = Alignment.Center)
+            when (apiResult.type) {
+                Status.LOADING -> {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
                     ) {
-                        Text(text = "RETRY")
+                        CircularProgressIndicator()
                     }
                 }
-            }
-
-            if (characters.value is Result.Success<*>) {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
-                    contentPadding = PaddingValues(top = 8.dp),
-                    state = rememberLazyListState()
-                ) {
-                    items((characters.value as Result.Success<*>).data as List<HarryCharacter>) { character ->
-                        CharacterRow(character = character, onClickCharacter = onClickCharacter)
+                Status.ERROR -> {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .wrapContentHeight(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Button(
+                            onClick = { retry.invoke() },
+                            modifier = Modifier.wrapContentSize(align = Alignment.Center)
+                        ) {
+                            Text(text = stringResource(id = R.string.retry))
+                        }
                     }
+                }
+                else -> {
+                    apiResult.data?.let { characters ->
+                        if (characters.isNotEmpty()) {
 
+                            LazyColumn(
+                                modifier = Modifier.fillMaxSize(),
+                                verticalArrangement = Arrangement.spacedBy(12.dp),
+                                contentPadding = PaddingValues(top = 8.dp),
+                                state = rememberLazyListState()
+                            ) {
+
+                                if (apiResult.data != null) {
+                                    items(apiResult.data as List<HarryCharacter>) { character ->
+                                        CharacterRow(
+                                            character = character,
+                                            onClickCharacter = onClickCharacter
+                                        )
+                                    }
+                                }
+                            }
+
+                        } else {
+                            Text(
+                                modifier = Modifier.fillMaxWidth(),
+                                textAlign = TextAlign.Center ,
+                                text = stringResource(id = R.string.empty_result),
+                                style = MaterialTheme.typography.titleLarge
+                            )
+                        }
+                    }
                 }
             }
         }
     }
 }
+
 
 @Composable
 fun CharacterRow(character: HarryCharacter, onClickCharacter: (HarryCharacter) -> Unit) {
@@ -238,28 +284,4 @@ fun Chip(
             )
         }
     }
-}
-
-
-@Preview
-@Composable
-fun PreviewCharacter() {
-    CharacterRow(character = HarryCharacter(
-        "",
-        "Tibi",
-        listOf(),
-        "",
-        "",
-        "",
-        "",
-        0,
-        false,
-        "",
-        "",
-        "",
-        Wand(),
-        "",
-        false,
-        false, "", listOf(), false, ""
-    ), onClickCharacter = {})
 }

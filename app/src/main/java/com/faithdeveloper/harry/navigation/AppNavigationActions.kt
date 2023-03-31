@@ -4,12 +4,12 @@ import androidx.navigation.NavController
 import androidx.navigation.NavOptionsBuilder
 
 object AppNavigationActions {
-    private fun cleanupNavGraph(
-        navOptionsBuilder: NavOptionsBuilder
-    ) {
-        navOptionsBuilder.launchSingleTop = true
-        navOptionsBuilder.restoreState = true
-    }
+//    private fun cleanupNavGraph(
+//        navOptionsBuilder: NavOptionsBuilder
+//    ) {
+//        navOptionsBuilder.launchSingleTop = true
+//        navOptionsBuilder.restoreState = true
+//    }
 
     val navigateToDetailsScreen: (navController: NavController) -> Unit =
         { navController ->
@@ -17,7 +17,7 @@ object AppNavigationActions {
                 AppDestinations.DetailsScreen.route
             ) {
                 navController.graph.startDestinationRoute?.let { route ->
-                    cleanupNavGraph(this)
+//                    cleanupNavGraph(this)
                 }
             }
 

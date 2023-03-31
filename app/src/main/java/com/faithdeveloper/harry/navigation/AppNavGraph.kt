@@ -3,7 +3,6 @@ package com.faithdeveloper.harry.navigation
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -16,7 +15,8 @@ import com.faithdeveloper.harry.viewmodel.MainScreenViewModel
 fun AppNavGraph(
     apiHelper: ApiHelper,
     navController: NavHostController,
-    startDestination: String = AppDestinations.MainScreen.route
+    startDestination: String = AppDestinations.MainScreen.route,
+    mainScreenViewModel: MainScreenViewModel
 ) {
     NavHost(
         navController = navController,
@@ -24,12 +24,7 @@ fun AppNavGraph(
         modifier = Modifier.fillMaxSize()
     ) {
 
-        var mainScreenViewModel: MainScreenViewModel? = null
         composable(AppDestinations.MainScreen.route) {
-            mainScreenViewModel = viewModel(
-                factory = MainScreenViewModel.provideFactory(apiHelper = apiHelper)
-            )
-
             MainScreenRoute(
                 mainScreenViewModel = mainScreenViewModel!!,
                 onClickCharacter = { character ->

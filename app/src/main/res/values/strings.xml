@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Harry</string>
+    <string name="all_characters">All Characters</string>
+    <string name="search_by">Search By:</string>
+    <string name="retry">RETRY</string>
+    <string name="empty_result">No Character Found</string>
+    <string name="search">Search</string>
 </resources>

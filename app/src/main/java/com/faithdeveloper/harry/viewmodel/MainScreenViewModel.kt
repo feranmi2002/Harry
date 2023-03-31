@@ -1,10 +1,9 @@
 package com.faithdeveloper.harry.viewmodel
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.faithdeveloper.harry.data.ApiHelper
-import com.faithdeveloper.harry.data.Result
+import com.faithdeveloper.harry.data.ApiResult
+import com.faithdeveloper.harry.data.Status
 import com.faithdeveloper.harry.model.HarryCharacter
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -20,16 +19,22 @@ class MainScreenViewModel(private val apiHelper: ApiHelper) : ViewModel() {
 
     private lateinit var lastPerformedOperation: LAST_PERFORMED_OPERATION
 
-    var result: Flow<Result<List<HarryCharacter>>> = flow { }
+    private var _result: MutableLiveData<ApiResult> = MutableLiveData()
+
+    val result: LiveData<ApiResult> get() = _result
+
+    init {
+        getAllCharacters()
+    }
+
 
     fun getAllCharacters() {
         lastPerformedOperation = LAST_PERFORMED_OPERATION.GET_ALL_CHARACTERS
         viewModelScope.launch {
-            result = apiHelper.getAllCharacters().onStart {
-                emit(Result.Loading)
-            }.catch {
-                emit(Result.Error(it))
+            apiHelper.getAllCharacters().collect {
+                _result.value = it
             }
+
         }
     }
 
@@ -38,16 +43,14 @@ class MainScreenViewModel(private val apiHelper: ApiHelper) : ViewModel() {
         lastPerformedOperation = LAST_PERFORMED_OPERATION.SEARCH_CHARACTERS
         this.query = query
         viewModelScope.launch {
-            result = if (searchType == NAME_SEARCH_TYPE)
-                apiHelper.getCharactersByName(query).onStart {
-                    emit(Result.Loading)
-                }.catch {
-                    emit(Result.Error(it))
+            if (searchType == NAME_SEARCH_TYPE) {
+                apiHelper.getCharactersByName(query).collect {
+                    _result.value = it
                 }
-            else apiHelper.getCharactersByHouse(query).onStart {
-                emit(Result.Loading)
-            }.catch {
-                emit(Result.Error(it))
+            } else {
+                apiHelper.getCharactersByHouse(query).collect {
+                    _result.value = it
+                }
             }
         }
     }
