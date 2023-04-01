@@ -5,4 +5,5 @@
     <string name="retry">RETRY</string>
     <string name="empty_result">No Character Found</string>
     <string name="search">Search</string>
+    <string name="network_error">Network Connection Error</string>
 </resources>

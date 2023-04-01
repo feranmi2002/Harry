@@ -12,11 +12,8 @@ object ServiceBuilder {
 
     private const val BASE_URL = "https://hp-api.onrender.com/api/"
 
-    val logger = HttpLoggingInterceptor()
-        .setLevel(HttpLoggingInterceptor.Level.BODY)
-
     private val okHttp = OkHttpClient.Builder()
-        .addInterceptor(logger)
+
     private val gson = GsonBuilder()
         .setLenient()
         .create()

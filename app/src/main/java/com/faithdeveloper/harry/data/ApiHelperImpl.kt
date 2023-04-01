@@ -15,6 +15,7 @@ class ApiHelperImpl(private val apiService: ApiService) : ApiHelper {
         emit(ApiResult(Status.ERROR, emptyList()))
     }
 
+
     override suspend fun getCharactersByHouse(house: String): Flow<ApiResult> = flow {
         emit(ApiResult(Status.SUCCESS, apiService.getCharactersByHouse(house)))
     }.onStart {
@@ -23,8 +24,10 @@ class ApiHelperImpl(private val apiService: ApiService) : ApiHelper {
         emit(ApiResult(Status.ERROR, emptyList()))
     }
 
+
     override suspend fun getCharactersByName(name: String): Flow<ApiResult> = flow {
         emit(
+//            filters all characters retrieved from api by the name query supplied
             ApiResult(Status.SUCCESS, apiService.getAllCharacters().filter {
                 it.name.contains(name, true)
             })

@@ -2,7 +2,7 @@ package com.faithdeveloper.harry.util
 
 object Utils {
 
-//    converts a list of string to a string with the items separated with commas
+    //    converts a list of string to a string with the items separated with commas
     fun formatListOfStrings(list: List<String?>): String {
         var string = ""
         var size = list.size
@@ -15,5 +15,4 @@ object Utils {
         }
         return string
     }
-
 }

@@ -46,12 +46,15 @@ fun MainScreen(
     retry: () -> Unit
 ) {
 
+//   store the input query entered by the user
     var inputValue by remember { mutableStateOf(TextFieldValue()) }
 
+//    store search type
     var searchType by remember {
         mutableStateOf(NAME)
     }
 
+//    observe api network call
     val apiResult: ApiResult by mainScreenViewModel.result.observeAsState(
         initial = ApiResult(
             Status.LOADING,
@@ -64,7 +67,9 @@ fun MainScreen(
             .fillMaxSize()
             .padding(16.dp),
     ) {
+
         Column(modifier = Modifier.fillMaxSize()) {
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -85,10 +90,7 @@ fun MainScreen(
                     textDecoration = TextDecoration.Underline,
                     color = MaterialTheme.colorScheme.secondary
                 )
-
-
             }
-
 
             OutlinedTextField(
                 modifier = Modifier
@@ -153,7 +155,10 @@ fun MainScreen(
                 })
             }
 
+//            load ui based on api result status
+
             when (apiResult.type) {
+//                loading
                 Status.LOADING -> {
                     Column(
                         modifier = Modifier
@@ -164,6 +169,7 @@ fun MainScreen(
                         CircularProgressIndicator()
                     }
                 }
+//                failed api network call
                 Status.ERROR -> {
                     Column(
                         modifier = Modifier
@@ -172,6 +178,14 @@ fun MainScreen(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
+                        Text(
+                            modifier = Modifier
+                                .wrapContentSize(align = Alignment.Center)
+                                .padding(bottom = 4.dp),
+                            text = stringResource(id = R.string.network_error),
+                            style = MaterialTheme.typography.titleSmall,
+                            color = MaterialTheme.colorScheme.error
+                        )
                         Button(
                             onClick = { retry.invoke() },
                             modifier = Modifier.wrapContentSize(align = Alignment.Center)
@@ -180,10 +194,11 @@ fun MainScreen(
                         }
                     }
                 }
+//                successful load
                 else -> {
                     apiResult.data?.let { characters ->
                         if (characters.isNotEmpty()) {
-
+//                  found characters
                             LazyColumn(
                                 modifier = Modifier.fillMaxSize(),
                                 verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -192,7 +207,7 @@ fun MainScreen(
                             ) {
 
                                 if (apiResult.data != null) {
-                                    items(apiResult.data as List<HarryCharacter>) { character ->
+                                    items(apiResult.data) { character ->
                                         CharacterRow(
                                             character = character,
                                             onClickCharacter = onClickCharacter
@@ -202,9 +217,10 @@ fun MainScreen(
                             }
 
                         } else {
+//                            empty result
                             Text(
                                 modifier = Modifier.fillMaxWidth(),
-                                textAlign = TextAlign.Center ,
+                                textAlign = TextAlign.Center,
                                 text = stringResource(id = R.string.empty_result),
                                 style = MaterialTheme.typography.titleLarge
                             )
@@ -247,6 +263,7 @@ fun CharacterRow(character: HarryCharacter, onClickCharacter: (HarryCharacter) -
         )
     }
 }
+
 
 @Composable
 fun Chip(

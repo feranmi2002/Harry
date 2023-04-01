@@ -6,14 +6,12 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.faithdeveloper.harry.data.ApiHelper
 import com.faithdeveloper.harry.ui.details_screen.DetailsRoute
 import com.faithdeveloper.harry.ui.main_screen.MainScreenRoute
 import com.faithdeveloper.harry.viewmodel.MainScreenViewModel
 
 @Composable
 fun AppNavGraph(
-    apiHelper: ApiHelper,
     navController: NavHostController,
     startDestination: String = AppDestinations.MainScreen.route,
     mainScreenViewModel: MainScreenViewModel
@@ -24,26 +22,32 @@ fun AppNavGraph(
         modifier = Modifier.fillMaxSize()
     ) {
 
+//        main screen
         composable(AppDestinations.MainScreen.route) {
             MainScreenRoute(
-                mainScreenViewModel = mainScreenViewModel!!,
+                mainScreenViewModel = mainScreenViewModel,
                 onClickCharacter = { character ->
-                    mainScreenViewModel?.setSelectedCharacter(character)
+
+//                    store the character clicked by user in the view model
+
+                    mainScreenViewModel.setSelectedCharacter(character)
+
+//                    pass the character into the detail screen
+
                     AppNavigationActions.navigateToDetailsScreen(navController)
                 }
             )
         }
 
+//        detail screen
         composable(AppDestinations.DetailsScreen.route) { navBackStackEntry ->
             DetailsRoute(
-                character = mainScreenViewModel?.selectedCharacter()!!
+                character = mainScreenViewModel.selectedCharacter()
             ) {
+//                pop to main screen
                 AppNavigationActions.popBackStack(navController)
             }
         }
 
     }
-
 }
-
-const val DETAIL_SCREEN_ARG_ID = "details_screen_arg_id"

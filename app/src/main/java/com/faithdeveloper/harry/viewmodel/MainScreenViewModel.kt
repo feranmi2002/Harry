@@ -3,24 +3,29 @@ package com.faithdeveloper.harry.viewmodel
 import androidx.lifecycle.*
 import com.faithdeveloper.harry.data.ApiHelper
 import com.faithdeveloper.harry.data.ApiResult
-import com.faithdeveloper.harry.data.Status
 import com.faithdeveloper.harry.model.HarryCharacter
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
-class MainScreenViewModel(private val apiHelper: ApiHelper) : ViewModel() {
+class MainScreenViewModel(val apiHelper: ApiHelper) : ViewModel() {
 
+    //  stores the character clicked by the user.it is passed to the detail screen by the nav graph
+    private lateinit var selectedCharacter: HarryCharacter
 
-    private var selectedCharacter: HarryCharacter? = null
-
+    //stores the search type: Either search by "house" or "name"
     private var searchType: String = NAME_SEARCH_TYPE
 
+    //    stores the search query entered by the user
     private lateinit var query: String
 
+    // used to track the last task requested by the ui. In case of failure, this flag is used
+//    to know which task to perform when the retry button is clicked on the ui
     private lateinit var lastPerformedOperation: LAST_PERFORMED_OPERATION
 
+    //    unexposed result of api network call
     private var _result: MutableLiveData<ApiResult> = MutableLiveData()
 
+    //    exposed result of api network call
     val result: LiveData<ApiResult> get() = _result
 
     init {
@@ -55,17 +60,21 @@ class MainScreenViewModel(private val apiHelper: ApiHelper) : ViewModel() {
         }
     }
 
+    //    stores the selected character by the user
     fun setSelectedCharacter(selectedCharacter: HarryCharacter) {
         this.selectedCharacter = selectedCharacter
     }
 
+    //    get the selected character
     fun selectedCharacter() = selectedCharacter
 
+    //    set search type
     fun setSearchType(searchType: String) {
         this.searchType = searchType
 
     }
 
+    //  retry the failed network api call
     fun retry() {
         when (lastPerformedOperation) {
             LAST_PERFORMED_OPERATION.GET_ALL_CHARACTERS -> getAllCharacters()
@@ -88,10 +97,9 @@ class MainScreenViewModel(private val apiHelper: ApiHelper) : ViewModel() {
         const val HOUSE_SEARCH_TYPE = "House"
     }
 
+    //    this is used to know which task to perform when retry is clicked on the ui
     private enum class LAST_PERFORMED_OPERATION {
         GET_ALL_CHARACTERS,
         SEARCH_CHARACTERS
     }
-
-
 }

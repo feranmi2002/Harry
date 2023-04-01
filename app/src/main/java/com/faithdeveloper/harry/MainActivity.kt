@@ -40,13 +40,11 @@ fun App() {
                 factory = MainScreenViewModel.provideFactory(apiHelper = apiHelper)
             )
             AppNavGraph(
-                apiHelper = apiHelper,
                 navController = navController,
                 mainScreenViewModel = mainScreenViewModel
             )
         }
     }
-
 }
 
 

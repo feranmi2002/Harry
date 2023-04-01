@@ -6,12 +6,12 @@ import com.faithdeveloper.harry.util.Utils
 
 @Composable
 fun DetailsRoute(character:HarryCharacter, onClickBack:() -> Unit){
-    DetailsScreen(character = mapCharacterToTitle(character) ) {
+    DetailsScreen(character = mapCharacter(character) ) {
         onClickBack.invoke()
     }
 }
 
-fun mapCharacterToTitle(character:HarryCharacter) = mapOf(
+fun mapCharacter(character:HarryCharacter) = mapOf(
     NAME to character.name,
     ACTOR to character.actor,
     ALIVE to character.alive.toString(),
@@ -33,14 +33,11 @@ fun mapCharacterToTitle(character:HarryCharacter) = mapOf(
     WAND_WOOD to character.wand.wood,
     WAND_CORE to character.wand.core,
     WAND_LENGTH to character.wand.length.toString()
-
-
 )
 
 const val NAME = "Name"
 const val ACTOR = "Actor"
 const val ALIVE = "Alive"
-const val ID = "ID"
 const val IMAGE = "Image Link"
 const val ALTERNATE_NAMES ="Alternate Names"
 const val SPECIES = "Species"
